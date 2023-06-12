@@ -84,21 +84,32 @@ namespace Swagger4WCF
                                 && !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(DateTime)).Resolve()))
                             .Select(_Type => _Type.IsArray ? _Type.GetElementType() : _Type).Distinct();
 
-                        definitionList.AddRange(responses.ToList());
+
+                        foreach (var item in responses.ToList())
+                        {
+                            if (!definitionList.Contains(item))
+                                definitionList.Add(item);
+                        }
+                        //definitionList.AddRange(responses.ToList());
 
                         var resparameters = _methods.SelectMany(_Method => _Method.Parameters).Select(x => x.ParameterType)
-                            .OrderBy(typeRef => typeRef.Name)
-                            .Where(typeRef =>
-                                !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(void)).Resolve())
-                                && !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(bool)).Resolve())
-                                && !(typeRef.Resolve() ==
-                                     typeRef.Resolve().Module.ImportReference(typeof(string)).Resolve())
-                                && !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(int)).Resolve())
-                                && !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(long)).Resolve())
-                                && !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(DateTime)).Resolve()))
-                            .Select(_Type => _Type.IsArray ? _Type.GetElementType() : _Type).Distinct();
+                        .OrderBy(typeRef => typeRef.Name)
+                        .Where(typeRef =>
+                            !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(void)).Resolve())
+                            && !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(bool)).Resolve())
+                            && !(typeRef.Resolve() ==
+                                 typeRef.Resolve().Module.ImportReference(typeof(string)).Resolve())
+                            && !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(int)).Resolve())
+                            && !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(long)).Resolve())
+                            && !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(DateTime)).Resolve()))
+                        .Select(_Type => _Type.IsArray ? _Type.GetElementType() : _Type).Distinct();
 
-                        definitionList.AddRange(resparameters.ToList());
+                        foreach (var item in resparameters.ToList())
+                        {
+                            if (!definitionList.Contains(item))
+                                definitionList.Add(item);
+                        }
+                        //definitionList.AddRange(resparameters.ToList());
                         int beforeCnt = definitionList.Count;
                         for (int i = 0; i < beforeCnt; i++)
                         {
@@ -293,7 +304,7 @@ namespace Swagger4WCF
                     {
                         this.Add("type: \"string\"");
                         this.Add("enum:");
-                        
+
                         foreach (var field in typeDef.Fields)
                         {
                             if (field.Name == "value__")
@@ -303,10 +314,11 @@ namespace Swagger4WCF
                     }
                     else
                     {
-                        if (type.Resolve()?.GetCustomAttribute<DataContractAttribute>() == null)
+                        if (type.Resolve()?.GetCustomAttribute<DataContractAttribute>() != null)
                         {
-                            definitionList.Add(type);
-                            this.Add("$ref: \"#/definitions/", type.Name, "\"");
+                            if (!definitionList.Contains(type))
+                                definitionList.Add(type);
+                                this.Add("$ref: \"#/definitions/", type.Name, "\"");
                         }
                         else
                         {

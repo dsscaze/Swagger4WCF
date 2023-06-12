@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using YamlDotNet.Serialization;
 
 namespace Swagger4WCF
 {
@@ -59,6 +60,7 @@ namespace Swagger4WCF
                 }
                 catch { return null; }
             }).Where(_Entry => _Entry != null).ToArray();
+
             foreach (var _entry in _domain)
             {
                 foreach (var _document in YAML.Generate(_entry.Assembly, Documentation.Load(_entry.Location, _entry.Assembly)))
@@ -68,6 +70,23 @@ namespace Swagger4WCF
                     {
                         _writer.Write(_document.ToString());
                         Console.WriteLine($"{ _name } -> { _location }");
+                    }
+
+                    var r = new StringReader(_document.ToString());
+                    var deserializer = new Deserializer();
+                    var yamlObject = deserializer.Deserialize(r);
+
+                    var serializer = new SerializerBuilder()
+                                            .JsonCompatible()
+                                            .Build();
+
+                    var json = serializer.Serialize(yamlObject);
+
+                    var _locationJson = $@"{ _directory }\{ _entry.Assembly.Name.Name }.{_document.Type.Name }.json";
+                    using (var _writer = new StreamWriter(_locationJson, false, Encoding.UTF8))
+                    {
+                        _writer.Write(json);
+                        Console.WriteLine($"{ _name } -> { _locationJson }");
                     }
                 }
             }
