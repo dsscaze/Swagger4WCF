@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Swagger4WCF.Demo.Models
 {
@@ -21,9 +22,39 @@ namespace Swagger4WCF.Demo.Models
         public string Lastname { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public List<Enderecos> Enderecos { get; set; }
+
+        /// <summary>
+        /// Principal
+        /// </summary>
+        public Enderecos EnderecoPrincipal { get; set; }
+
+        /// <summary>
         /// Gender
         /// </summary>
         [DataMember]
         public Gender Gender { get; set; }
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [DataContract]
+    public class Enderecos
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember]
+        public string Rua { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember]
+        public string Bairro { get; set; }
+    }
+
 }

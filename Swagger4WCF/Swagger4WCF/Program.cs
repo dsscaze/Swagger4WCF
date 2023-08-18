@@ -14,16 +14,27 @@ namespace Swagger4WCF
             if (args.Length==0)
             {
                 args = new string[5];
-                Console.WriteLine("Please provide path to sln");
-                args[0]= Console.ReadLine();
-                Console.WriteLine("Please provide path to project file");
-                args[1] = Console.ReadLine();
-                Console.WriteLine("Please provide configuration Release or Debug");
-                args[2] = Console.ReadLine();
-                Console.WriteLine("Please provide Solution Platform (Any CPU)");
-                args[3] = Console.ReadLine();
-                Console.WriteLine("Please provide path to dll");
-                args[4] = Console.ReadLine();
+                //Console.WriteLine("Please provide path to sln");
+                //args[0]= Console.ReadLine();
+                //Console.WriteLine("Please provide path to project file");
+                //args[1] = Console.ReadLine();
+                //Console.WriteLine("Please provide configuration Release or Debug");
+                //args[2] = Console.ReadLine();
+                //Console.WriteLine("Please provide Solution Platform (Any CPU)");
+                //args[3] = Console.ReadLine();
+                //Console.WriteLine("Please provide path to dll");
+                //args[4] = Console.ReadLine();
+
+                
+                args[0] = @"C:\Users\dssca\Documents\GitHub\Swagger4WCF\Swagger4WCF\Swagger4WCF.sln";
+                
+                args[1] = @"C:\Users\dssca\Documents\GitHub\Swagger4WCF\Swagger4WCF\Swagger4WCF.Demo\Swagger4WCF.Demo.csproj";
+
+                args[2] = "debug";
+
+                args[3] = "any";
+                
+                args[4] = @"C:\Users\dssca\Documents\GitHub\Swagger4WCF\Swagger4WCF\Swagger4WCF.Demo\bin\Debug\";
             }
 
             try

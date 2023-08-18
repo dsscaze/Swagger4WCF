@@ -296,9 +296,20 @@ namespace Swagger4WCF
                     }
                     else if (type.IsArray)
                     {
+
                         this.Add("type: array");
                         this.Add("items:");
                         using (new Block(this)) { this.Add(type.GetElementType(), documentation); }
+                    }
+                    else if (type.Name == "List`1")
+                    {
+                        AssemblyDefinition a = type.Module.Assembly;
+                        string fullName = type.FullName.Replace("System.Collections.Generic.List`1<", "").Replace(">", "");
+                        TypeDefinition typeSelected = a.MainModule.Types.Where(_Type => _Type.FullName == fullName).FirstOrDefault();
+
+                        this.Add("type: array");
+                        this.Add("items:");
+                        using (new Block(this)) { this.Add(typeSelected.GetElementType(), documentation); }
                     }
                     else if (type is TypeDefinition typeDef && typeDef.IsEnum)
                     {
@@ -318,7 +329,7 @@ namespace Swagger4WCF
                         {
                             if (!definitionList.Contains(type))
                                 definitionList.Add(type);
-                                this.Add("$ref: \"#/definitions/", type.Name, "\"");
+                            this.Add("$ref: \"#/definitions/", type.Name, "\"");
                         }
                         else
                         {
