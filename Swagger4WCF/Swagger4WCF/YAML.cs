@@ -12,11 +12,16 @@ namespace Swagger4WCF
 {
     static public partial class YAML
     {
+        public static List<AssemblyDefinition> _assembliesAuxiliares;
+
         static public IEnumerable<YAML.Document> Generate(AssemblyDefinition assembly, Documentation documentation)
         {
             foreach (var _type in assembly.MainModule.Types.Where(_Type => _Type.IsInterface && _Type.GetCustomAttribute<ServiceContractAttribute>() != null))
             {
-                yield return Document.Generate(_type, documentation);
+                if (_type.FullName == _type.Module.Name.Replace(".dll", "") + "." + _type.Name)
+                {
+                    yield return Document.Generate(_type, documentation);
+                }
             }
         }
     }

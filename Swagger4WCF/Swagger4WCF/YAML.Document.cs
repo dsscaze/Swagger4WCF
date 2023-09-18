@@ -15,7 +15,16 @@ namespace Swagger4WCF
         {
             static public Document Generate(TypeDefinition type, Documentation documentation)
             {
-                return Content.Generate(type, documentation ?? Documentation.Empty());
+                try
+                {
+                    return Content.Generate(type, documentation ?? Documentation.Empty());
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erro Document.Generate: {ex.ToString()}");
+
+                    return new Document(null, "");
+                }
             }
 
             static public implicit operator string(YAML.Document document)

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Web;
@@ -35,7 +34,6 @@ namespace Swagger4WCF
                 {
                     return this.m_Builder.ToString();
                 }
-
 
                 private Content(TypeDefinition type, Documentation documentation)
                 {
@@ -83,7 +81,6 @@ namespace Swagger4WCF
                                 && !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(long)).Resolve())
                                 && !(typeRef.Resolve() == typeRef.Resolve().Module.ImportReference(typeof(DateTime)).Resolve()))
                             .Select(_Type => _Type.IsArray ? _Type.GetElementType() : _Type).Distinct();
-
 
                         foreach (var item in responses.ToList())
                         {
@@ -153,7 +150,6 @@ namespace Swagger4WCF
                         else { this.Add(_attribute.Value<string>("Method").ToLower(), ":"); }
                         using (new Block(this))
                         {
-
                             this.Add("summary: ", method.Name);
                             if (documentation != null && documentation[method].Summary != null) { this.Add("description: ", documentation[method].Summary); }
                             this.Add("consumes:");
@@ -265,7 +261,8 @@ namespace Swagger4WCF
 
                 private void Add(TypeReference type, Documentation documentation)
                 {
-                    if (type.Resolve() == type.Module.ImportReference(typeof(string)).Resolve())
+                    if (type.Resolve() == type.Module.ImportReference(typeof(string)).Resolve() ||
+                            type.FullName == type.Module.ImportReference(typeof(string)).FullName)
                     {
                         this.Add("type: \"string\"");
                     }
@@ -273,30 +270,40 @@ namespace Swagger4WCF
                     {
                         this.Add("type:\" boolean\"");
                     }
-                    else if (type.Resolve() == type.Module.ImportReference(typeof(int)).Resolve())
+                    else if (type.Resolve() == type.Module.ImportReference(typeof(int)).Resolve()
+                             || type.Resolve() == type.Module.ImportReference(typeof(int?)).Resolve()
+                             || type.FullName == type.Module.ImportReference(typeof(int)).FullName
+                             || type.FullName == type.Module.ImportReference(typeof(int?)).FullName)
                     {
                         this.Add("type: \"number\"");
                         this.Add("format: int32");
                     }
-                    else if (type.Resolve() == type.Module.ImportReference(typeof(long)).Resolve())
+                    else if (type.Resolve() == type.Module.ImportReference(typeof(long)).Resolve()
+                             || type.Resolve() == type.Module.ImportReference(typeof(long?)).Resolve()
+                             || type.FullName == type.Module.ImportReference(typeof(long)).FullName
+                             || type.FullName == type.Module.ImportReference(typeof(long?)).FullName)
                     {
                         this.Add("type: \"number\"");
                         this.Add("format: int32");
                     }
                     else if (type.Resolve() == type.Module.ImportReference(typeof(decimal)).Resolve()
-                             || type.Resolve() == type.Module.ImportReference(typeof(decimal?)).Resolve())
+                             || type.Resolve() == type.Module.ImportReference(typeof(decimal?)).Resolve()
+                             || type.FullName == type.Module.ImportReference(typeof(decimal)).FullName
+                             || type.FullName == type.Module.ImportReference(typeof(decimal?)).FullName)
                     {
                         this.Add("type: \"number\"");
                         this.Add("format: decimal(9,2)");
                     }
-                    else if (type.Resolve() == type.Module.ImportReference(typeof(DateTime)).Resolve())
+                    else if (type.Resolve() == type.Module.ImportReference(typeof(DateTime)).Resolve()
+                             || type.Resolve() == type.Module.ImportReference(typeof(DateTime?)).Resolve()
+                             || type.FullName == type.Module.ImportReference(typeof(DateTime)).FullName
+                             || type.FullName == type.Module.ImportReference(typeof(DateTime?)).FullName)
                     {
                         this.Add("type: \"string\"");
                         this.Add("format: date-time");
                     }
                     else if (type.IsArray)
                     {
-
                         this.Add("type: array");
                         this.Add("items:");
                         using (new Block(this)) { this.Add(type.GetElementType(), documentation); }
@@ -309,6 +316,28 @@ namespace Swagger4WCF
 
                         this.Add("type: array");
                         this.Add("items:");
+
+                        if (typeSelected == null)
+                        {
+                            string versao = Environment.Version.Major.ToString() + "." +
+                                Environment.Version.MajorRevision.ToString() + "." +
+                                Environment.Version.Build.ToString();
+
+                            AssemblyDefinition _a = AssemblyDefinition.ReadAssembly(@"C:\WINDOWS\Microsoft.NET\Framework\v" + versao + @"\mscorlib.dll");
+                            typeSelected = _a.MainModule.Types.Where(_type => _type.Name == fullName.Replace("System.", "")).FirstOrDefault();
+                        }
+
+                        if (typeSelected == null && _assembliesAuxiliares != null)
+                        {
+                            foreach (var _assembly in _assembliesAuxiliares)
+                            {
+                                foreach (var _modulo in _assembly.Modules)
+                                {
+                                    typeSelected = _modulo.Types.Where(_type => _type.FullName == fullName).FirstOrDefault();
+                                }
+                            }
+                        }
+
                         using (new Block(this)) { this.Add(typeSelected.GetElementType(), documentation); }
                     }
                     else if (type is TypeDefinition typeDef && typeDef.IsEnum)
@@ -335,7 +364,6 @@ namespace Swagger4WCF
                         {
                             this.Add("$ref: \"#/definitions/", type.Name, "\"");
                         }
-
                     }
                 }
 

@@ -27,6 +27,11 @@ namespace Swagger4WCF.Demo.Models
         public List<Enderecos> Enderecos { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public List<string> Telefones { get; set; }
+
+        /// <summary>
         /// Principal
         /// </summary>
         public Enderecos EnderecoPrincipal { get; set; }

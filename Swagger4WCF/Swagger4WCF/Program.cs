@@ -11,30 +11,32 @@ namespace Swagger4WCF
     {
         static void Main(string[] args)
         {
-            if (args.Length==0)
+            if (args.Length == 0)
             {
                 args = new string[5];
-                Console.WriteLine("Please provide path to sln");
-                args[0] = Console.ReadLine();
-                Console.WriteLine("Please provide path to project file");
-                args[1] = Console.ReadLine();
-                Console.WriteLine("Please provide configuration Release or Debug");
-                args[2] = Console.ReadLine();
-                Console.WriteLine("Please provide Solution Platform (Any CPU)");
-                args[3] = Console.ReadLine();
-                Console.WriteLine("Please provide path to dll");
-                args[4] = Console.ReadLine();
+                //Console.WriteLine("Please provide path to sln");
+                //args[0] = Console.ReadLine();
+                //Console.WriteLine("Please provide path to project file");
+                //args[1] = Console.ReadLine();
+                //Console.WriteLine("Please provide configuration Release or Debug");
+                //args[2] = Console.ReadLine();
+                //Console.WriteLine("Please provide Solution Platform (Any CPU)");
+                //args[3] = Console.ReadLine();
+                //Console.WriteLine("Please provide path to dll");
+                //args[4] = Console.ReadLine();
 
 
                 //args[0] = @"C:\Users\dssca\Documents\GitHub\Swagger4WCF\Swagger4WCF\Swagger4WCF.sln";
-                
                 //args[1] = @"C:\Users\dssca\Documents\GitHub\Swagger4WCF\Swagger4WCF\Swagger4WCF.Demo\Swagger4WCF.Demo.csproj";
-
                 //args[2] = "debug";
-
                 //args[3] = "any";
-                
                 //args[4] = @"C:\Users\dssca\Documents\GitHub\Swagger4WCF\Swagger4WCF\Swagger4WCF.Demo\bin\Debug\";
+
+                args[0] = @"D:\tfs\Checkout\1.3.105.1\Decodificar.CheckOut\Decodificar.CheckOut.sln";
+                args[1] = @"D:\tfs\Checkout\1.3.105.1\Decodificar.CheckOut\Decodificar.CheckOut.API\Decodificar.CheckOut.API.csproj";
+                args[2] = "debug";
+                args[3] = "any";
+                args[4] = @"D:\tfs\Checkout\1.3.105.1\Decodificar.CheckOut\Decodificar.CheckOut.API\bin\";
             }
 
             try
@@ -71,6 +73,15 @@ namespace Swagger4WCF
                 }
                 catch { return null; }
             }).Where(_Entry => _Entry != null).ToArray();
+
+            string dllAuxiliar = _directory + @"\Decodificar.CheckOut.Entidades.dll";
+            if (File.Exists(dllAuxiliar))
+            {
+                AssemblyDefinition _assemblyAuxiliar = AssemblyDefinition.ReadAssembly(dllAuxiliar);
+
+                YAML._assembliesAuxiliares = new System.Collections.Generic.List<AssemblyDefinition>();
+                YAML._assembliesAuxiliares.Add(_assemblyAuxiliar);
+            }
 
             foreach (var _entry in _domain)
             {
